@@ -24,3 +24,4 @@ Route::post('hello', [IndexController::class, 'UpdateHelloMsg']);
 Route::get('hello', [IndexController::class, 'GetHelloMsg']);
 
 Route::post('wechat', [WechatController::class, 'Index']);
+Route::get('wechat', [WechatController::class, 'Index']);
