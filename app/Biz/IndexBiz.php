@@ -5,6 +5,7 @@ namespace App\Biz;
 use App\Http\Requests\Api\HelloMsgRequest;
 use App\Http\Requests\Api\IndexRequest;
 use App\Models\Config;
+use App\Utils\CommonUtils;
 use Illuminate\Support\Facades\Cache;
 use Orhanerday\OpenAi\OpenAi;
 
@@ -108,16 +109,16 @@ class IndexBiz
         $cfg->value = json_encode($value, JSON_UNESCAPED_UNICODE);
         $cfg->save();
 
-        return $value;
+        return CommonUtils::RspSuccess($value);
     }
 
     public static function GetHelloMsg()
     {
         $cfg = Config::where('key', 'hello_msg')->where('status', 1)->first();
         $value = json_decode($cfg->value, true);
-        return [
+        return CommonUtils::RspSuccess([
             'words' => $value['words'],
             'source' => $value['source']
-        ];
+        ]);
     }
 }
