@@ -2,7 +2,9 @@
 
 namespace App\Biz;
 
+use App\Http\Requests\Api\HelloMsgRequest;
 use App\Http\Requests\Api\IndexRequest;
+use App\Models\Config;
 use Illuminate\Support\Facades\Cache;
 use Orhanerday\OpenAi\OpenAi;
 
@@ -88,5 +90,34 @@ class IndexBiz
             $messages = array_slice($messages, $offset, $msgLen);
             Cache::put($chatKey, json_encode($messages), $msgExpired);
         }
+    }
+
+    public static function UpdateHelloMsg(HelloMsgRequest $request)
+    {
+        $cfg = Config::where('key', 'hello_msg')->where('status', 1)->first();
+        if (!$cfg) {
+            $cfg = new Config();
+            $cfg->key = 'hello_msg';
+            $cfg->status = 1;
+        }
+
+        $value = [
+            'words' => $request->input('words'),
+            'source' => $request->input('source'),
+        ];
+        $cfg->value = json_encode($value, JSON_UNESCAPED_UNICODE);
+        $cfg->save();
+
+        return $value;
+    }
+
+    public static function GetHelloMsg()
+    {
+        $cfg = Config::where('key', 'hello_msg')->where('status', 1)->first();
+        $value = json_decode($cfg->value, true);
+        return [
+            'words' => $value['words'],
+            'source' => $value['source']
+        ];
     }
 }
