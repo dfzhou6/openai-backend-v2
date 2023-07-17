@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Utils\CommonUtils;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -44,10 +45,8 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         if ($e) {
-            if ($request->expectsJson()) {
-                return CommonUtils::RspError($e->getMessage());
-            } else {
-                return response($e->getMessage());
+            if ($request->expectsJson() && $e instanceof ValidationException) {
+                return CommonUtils::RspError($e->validator->errors());
             }
         }
         return parent::render($request, $e);
