@@ -57,19 +57,22 @@ class IndexBiz
         $openAi->chat($opts, function ($curl_info, $data) use (&$rspData) {
             $obj = json_decode($data);
             if ($obj && $obj->error->message != '') {
-                return;
-            }
 
-            echo $data;
-            $clean = str_replace("data: ", "", $data);
-            $arr = json_decode($clean, true);
-            if ($data != "data: [DONE]\n\n" && isset($arr['choices'][0]['delta']['content'])) {
-                $rspData .= $arr['choices'][0]['delta']['content'];
+            } else {
+                echo $data;
+                $clean = str_replace("data: ", "", $data);
+                $arr = json_decode($clean, true);
+                if ($data != "data: [DONE]\n\n" && isset($arr['choices'][0]['delta']['content'])) {
+                    $rspData .= $arr['choices'][0]['delta']['content'];
+                }
             }
 
             echo PHP_EOL;
-            ob_flush();
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
             flush();
+
             return strlen($data);
         });
 
