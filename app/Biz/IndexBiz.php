@@ -5,6 +5,7 @@ namespace App\Biz;
 use App\Http\Requests\Api\HelloMsgRequest;
 use App\Http\Requests\Api\IndexRequest;
 use App\Models\Config;
+use App\Models\User;
 use App\Utils\CommonUtils;
 use Illuminate\Support\Facades\Cache;
 use Orhanerday\OpenAi\OpenAi;
@@ -19,12 +20,19 @@ class IndexBiz
         header('Content-type: text/event-stream');
 
         $username = $request->get('username');
+        $token = $request->get('token');
         $reqId = $request->get('req_id');
         $question = $request->get('question');
 
         // check login
-        $loginKey = sprintf(config('constants.USER_LOGIN_KEY'), $username);
-        if (!Cache::has($loginKey)) {
+        $user = User::firstWhere('username', $username);
+        if (empty($user)) {
+            return;
+        }
+        if ($user->token !== $token) {
+            return;
+        }
+        if ($user->token_expire_time < time()) {
             return;
         }
 
