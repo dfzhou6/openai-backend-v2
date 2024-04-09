@@ -24,6 +24,7 @@ class IndexRequest extends FormRequest
     public function rules()
     {
         return [
+            'token' => 'required|max:255',
             'username' => 'required|max:255',
             'req_id' => 'required|max:255',
             'question' => 'required|max:2000'

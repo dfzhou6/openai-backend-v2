@@ -15,7 +15,7 @@ class LoginBiz
     {
         $username = $request->get('username');
         $token = $request->get('token');
-        if (empty($username)) {
+        if (empty($username) || empty($token)) {
             return CommonUtils::RspError('请重新登录');
         }
 
@@ -50,6 +50,7 @@ class LoginBiz
         $user->token = Str::uuid()->toString();
         $user->last_login_time = time();
         $user->token_expire_time = $user->last_login_time + config('constants.USER_LOGIN_EXPIRED');
+        $user->save();
 
         return CommonUtils::RspSuccess([
             'username' => $user->username,
@@ -57,5 +58,30 @@ class LoginBiz
             'token_expire_time' => $user->token_expire_time,
             'token' => $user->token,
         ]);
+    }
+
+    public static function Logout(Request $request)
+    {
+        $username = $request->get('username');
+        $token = $request->get('token');
+        if (empty($username) || empty($token)) {
+            return CommonUtils::RspError('请重新登录');
+        }
+
+        $user = User::firstWhere('username', $username);
+        if (empty($user)) {
+            return CommonUtils::RspError('请重新登录');
+        }
+        if ($user->token !== $token) {
+            return CommonUtils::RspError('已在其他地方登录，请重新登录');
+        }
+        if ($user->token_expire_time < time()) {
+            return CommonUtils::RspError('登录已失效，请重新登录');
+        }
+        $user->token = '';
+        $user->token_expire_time = time();
+        $user->save();
+
+        return CommonUtils::RspSuccess('');
     }
 }

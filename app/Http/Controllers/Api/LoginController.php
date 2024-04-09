@@ -18,4 +18,9 @@ class LoginController extends Controller
     {
         return LoginBiz::Check($request);
     }
+
+    public function Logout(Request $request)
+    {
+        return LoginBiz::Logout($request);
+    }
 }

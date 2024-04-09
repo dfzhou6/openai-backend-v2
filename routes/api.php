@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', [LoginController::class, 'Index']);
 Route::get('login/check', [LoginController::class, 'Check']);
+Route::get('logout', [LoginController::class, 'Logout']);
 
 Route::get('chat', [IndexController::class, 'Index']);
 Route::post('hello', [IndexController::class, 'UpdateHelloMsg']);

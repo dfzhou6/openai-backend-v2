@@ -71,10 +71,12 @@ class IndexBiz
 
             } else {
                 echo $data;
-                $clean = str_replace("data: ", "", $data);
-                $arr = json_decode($clean, true);
-                if ($data != "data: [DONE]\n\n" && isset($arr['choices'][0]['delta']['content'])) {
-                    $rspData .= $arr['choices'][0]['delta']['content'];
+                $clean = explode("\n", str_replace("data: ", "", $data));
+                for ($i = 0; $i < count($clean); $i++) {
+                    $arr = json_decode($clean[$i], true);
+                    if ($clean[$i] != "[DONE]\n\n" && isset($arr['choices'][0]['delta']['content'])) {
+                        $rspData .= $arr['choices'][0]['delta']['content'];
+                    }
                 }
             }
 
